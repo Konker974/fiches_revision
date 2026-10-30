@@ -1,0 +1,16 @@
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+joblib
+sqlalchemy>=2.0
+python-dotenv
+# Uniquement pour utiliser MySQL (docker-compose) au lieu de SQLite
+pymysql
+# Uniquement pour utiliser PostgreSQL (docker-compose.postgres.yml)
+psycopg[binary]
+# Notebook
+ipykernel
+# Tests
+pytest

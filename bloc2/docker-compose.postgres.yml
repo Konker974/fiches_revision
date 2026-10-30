@@ -1,0 +1,55 @@
+# PostgreSQL + pgAdmin pour remplacer SQLite (optionnel, alternative à MySQL).
+#   cp .env.example .env   puis   docker compose -f docker-compose.postgres.yml up -d
+#   pgAdmin : http://localhost:8081 (le serveur "shop" est déjà déclaré)
+# phpMyAdmin ne gère que MySQL/MariaDB : pour PostgreSQL on utilise pgAdmin.
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      # 5433 côté machine : 5432 est souvent déjà pris par un PostgreSQL local
+      - "${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:8.14
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"  # pas de login multi-utilisateurs en local
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "8081:80"
+    configs:
+      - source: pgadmin_servers
+        target: /pgadmin4/servers.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+# Connexion pré-enregistrée dans pgAdmin (le mot de passe est demandé au 1er accès)
+configs:
+  pgadmin_servers:
+    content: |
+      {"Servers": {"1": {
+        "Name": "shop",
+        "Group": "Servers",
+        "Host": "postgres",
+        "Port": 5432,
+        "MaintenanceDB": "${POSTGRES_DB}",
+        "Username": "${POSTGRES_USER}",
+        "SSLMode": "prefer"
+      }}}
+
+volumes:
+  postgres_data:

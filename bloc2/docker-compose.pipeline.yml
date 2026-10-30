@@ -1,0 +1,50 @@
+# Pipeline complet dockerisé : etl -> ingestion -> train, sur PostgreSQL.
+#   docker compose -f docker-compose.pipeline.yml up --build
+#   relancer une étape : docker compose -f docker-compose.pipeline.yml run --rm train
+#   résultats : ./models/fraud_model.joblib et ./models/metrics.json
+#
+# postgres et etl démarrent en parallèle ; ingestion attend la fin de l'ETL et une base
+# prête ; train attend la fin de l'ingestion. Une étape en échec bloque la suite.
+
+# Reprend postgres + pgAdmin sans dupliquer leur définition
+include:
+  - docker-compose.postgres.yml
+
+x-pipeline: &pipeline
+  build: .
+  image: bloc2-pipeline
+  environment:
+    # Dans le réseau compose la base s'appelle "postgres" (port interne 5432)
+    DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    RAW_DATA_PATH: /data/orders.json
+  volumes:
+    - processed:/app/data/processed
+    - ./models:/app/models
+
+services:
+  etl:
+    <<: *pipeline
+    command: ["python", "etl.py"]
+    volumes:
+      - processed:/app/data/processed
+      - ../orders.json:/data/orders.json:ro
+
+  ingestion:
+    <<: *pipeline
+    command: ["python", "ingestion.py"]
+    depends_on:
+      etl:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+
+  train:
+    <<: *pipeline
+    command: ["python", "train.py"]
+    depends_on:
+      ingestion:
+        condition: service_completed_successfully
+
+# CSV intermédiaire partagé entre etl et ingestion
+volumes:
+  processed:

@@ -1,0 +1,11 @@
+# Seuls les scripts du pipeline vont dans l'image
+.venv/
+__pycache__/
+*.pyc
+.env
+data/
+models/
+tests_demo/
+*.ipynb
+*.md
+docker-compose*.yml

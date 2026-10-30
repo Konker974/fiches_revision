@@ -1,0 +1,66 @@
+{
+  "trained_at": "2026-10-24T11:51:26",
+  "model": "random_forest",
+  "split_date": "2017-07-01",
+  "features": [
+    "payment_type",
+    "market",
+    "order_region",
+    "customer_state",
+    "n_items",
+    "total_quantity",
+    "total_sales",
+    "max_unit_price",
+    "n_categories",
+    "order_hour",
+    "order_weekday",
+    "order_month"
+  ],
+  "cv_pr_auc": {
+    "baseline_dummy": 0.02265658005856255,
+    "logistic_regression": 0.08067804231652095,
+    "random_forest": 0.08352444050022435
+  },
+  "test": {
+    "roc_auc": 0.8795,
+    "pr_auc": 0.0944,
+    "fraud_rate": 0.0225,
+    "confusion_matrix": [
+      [
+        10081,
+        3281
+      ],
+      [
+        12,
+        296
+      ]
+    ],
+    "report": {
+      "0": {
+        "precision": 0.9988110571683345,
+        "recall": 0.7544529262086515,
+        "f1-score": 0.859603496056278,
+        "support": 13362.0
+      },
+      "1": {
+        "precision": 0.08275090858261112,
+        "recall": 0.961038961038961,
+        "f1-score": 0.1523809523809524,
+        "support": 308.0
+      },
+      "accuracy": 0.7591075347476225,
+      "macro avg": {
+        "precision": 0.5407809828754728,
+        "recall": 0.8577459436238062,
+        "f1-score": 0.5059922242186152,
+        "support": 13670.0
+      },
+      "weighted avg": {
+        "precision": 0.97817122353524,
+        "recall": 0.7591075347476225,
+        "f1-score": 0.8436690012902208,
+        "support": 13670.0
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+# Dépendances minimales de l'image Docker du pipeline (etl, ingestion, train).
+# Pas de notebook, graphiques ni tests : l'image reste légère.
+pandas==2.3.3
+numpy==2.2.6
+scikit-learn==1.7.2
+joblib==1.6.0
+sqlalchemy==2.0.55
+python-dotenv==1.2.4
+psycopg[binary]==3.2.10

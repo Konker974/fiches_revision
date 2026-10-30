@@ -1,0 +1,12 @@
+pandas
+matplotlib
+seaborn
+requests
+sqlalchemy
+pymysql
+cryptography
+python-dotenv
+scikit-learn
+joblib
+jupyter
+pytest
